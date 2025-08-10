@@ -1,0 +1,2 @@
+# eventmanager
+Django project
