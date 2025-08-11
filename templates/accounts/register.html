@@ -1,0 +1,15 @@
+{% extends "common/base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-6 col-lg-5 border p-4 rounded shadow-sm">
+            <h2 class="mb-4 text-center">Register</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
