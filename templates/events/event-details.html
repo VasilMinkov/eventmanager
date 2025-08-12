@@ -1,0 +1,68 @@
+{% extends "common/base.html" %}
+{% block title %}{{ event.title }} - Event Manager{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>{{ event.title }}</h1>
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p>{{ event.description }}</p>
+        <p><small>Created by {{ event.created_by }}</small></p>
+
+        <h3>Attendees</h3>
+
+        {% if participants %}
+            <ul id="attendee-list" class="list-unstyled">
+                {% for participant in participants %}
+                    {% if forloop.counter <= 5 %}
+                        <li>
+                            {{ participant.user.username }} —
+                            {% if participant.status == 'yes' %}Going ✅{% else %}Not Going ❌{% endif %}
+                        </li>
+                    {% else %}
+                        <li class="d-none extra-attendee">
+                            {{ participant.user.username }} —
+                            {% if participant.status == 'yes' %}Going ✅{% else %}Not Going ❌{% endif %}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            {% if has_many_participants %}
+                <button id="see-more-btn" class="btn btn-link p-0">See more</button>
+            {% endif %}
+        {% else %}
+            <p>No other attendees yet.</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <p>Your response:
+                {% if user_rsvp == 'yes' %}
+                    Going ✅
+                {% elif user_rsvp == 'no' %}
+                    Not Going ❌
+                {% else %}
+                    You have not responded yet.
+                {% endif %}
+            </p>
+            <a href="{% url 'event-rsvp' event.pk %}" class="btn btn-primary">Change RSVP</a>
+        {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to RSVP.</p>
+        {% endif %}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const seeMoreBtn = document.getElementById('see-more-btn');
+                if (!seeMoreBtn) return;
+
+                seeMoreBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.extra-attendee').forEach(el => el.classList.remove('d-none'));
+                    seeMoreBtn.style.display = 'none';
+                });
+            });
+        </script>
+
+        <a href="{% url 'event-rsvp' event.pk %}" class="btn btn-success">RSVP</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Events</a>
+    </div>
+{% endblock %}
