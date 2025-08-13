@@ -1,0 +1,132 @@
+{% extends "common/base.html" %}
+{% block title %}Edit Profile - Event Manager{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-id-card me-2"></i>Profile Details
+                                </h5>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.bio.id_for_label }}" class="form-label">
+                                        <i class="fas fa-align-left me-1"></i>Bio
+                                    </label>
+                                    {{ form.bio }}
+                                    {% if form.bio.errors %}
+                                        <div class="text-danger small mt-1">{{ form.bio.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.avatar.id_for_label }}" class="form-label">
+                                        <i class="fas fa-camera me-1"></i>Profile Picture
+                                    </label>
+                                    {{ form.avatar }}
+                                    {% if form.avatar.errors %}
+                                        <div class="text-danger small mt-1">{{ form.avatar.errors }}</div>
+                                    {% endif %}
+                                    {% if profile.avatar %}
+                                        <div class="mt-2">
+                                            <small class="text-muted">Current:</small><br>
+                                            <img src="{{ profile.avatar.url }}" alt="Current avatar" class="rounded" style="max-width: 100px; max-height: 100px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4 bg-light">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-eye text-info me-2"></i>Current Profile Preview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Avatar" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                {{ user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-1">{{ user.get_full_name|default:user.username }}</h6>
+                            <p class="text-muted mb-1">{{ user.email }}</p>
+                            {% if profile.location %}
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ profile.location }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if profile.bio %}
+                        <div class="mt-3 pt-3 border-top">
+                            <p class="mb-0">{{ profile.bio }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

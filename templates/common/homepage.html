@@ -4,7 +4,58 @@
     {% if user.is_authenticated %}
         <a class="btn btn-success mb-3" href="{% url 'event-create' %}">Create New Event</a>
     {% endif %}
-    <h1 class="mb-4">Upcoming Events</h1>
+
+    <!-- Search Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-search me-2"></i>Find Events
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    {{ search_form.search.label_tag }}
+                    {{ search_form.search }}
+                </div>
+                <div class="col-md-3">
+                    {{ search_form.location.label_tag }}
+                    {{ search_form.location }}
+                </div>
+                <div class="col-md-2">
+                    {{ search_form.date_from.label_tag }}
+                    {{ search_form.date_from }}
+                </div>
+                <div class="col-md-2">
+                    {{ search_form.date_to.label_tag }}
+                    {{ search_form.date_to }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search">Search</i>
+                    </button>
+                </div>
+            </form>
+            {% if request.GET %}
+                <div class="mt-2">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Clear Filters
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <h1 class="mb-4">
+        {% if request.GET %}
+            Search Results
+            {% if events %}({{ events|length }} found){% endif %}
+        {% else %}
+            Upcoming Events
+        {% endif %}
+    </h1>
+
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for event in events %}
             <div class="col">

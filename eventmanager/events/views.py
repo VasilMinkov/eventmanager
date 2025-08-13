@@ -1,19 +1,15 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.views.generic import CreateView, ListView, DetailView, FormView
-
 from eventmanager.comments.forms import CommentForm
-from eventmanager.events.forms import EventForm, RSVPForm
+from eventmanager.events.forms import EventForm, RSVPForm, EventSearchForm
 from eventmanager.events.models import Event, EventParticipation, Invitation
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.http import Http404
 from .models import Event
 from .forms import EventForm
 
@@ -22,7 +18,9 @@ class EventCreateView(CreateView):
     model = Event
     form_class = EventForm
     template_name = 'events/event-create.html'
-    success_url = reverse_lazy('event_list')
+
+    def get_success_url(self):
+        return reverse('event-details', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -46,17 +44,42 @@ class EventListView(ListView):
     model = Event
     template_name = 'common/homepage.html'
     context_object_name = 'events'
-    ordering = ['date']
+    paginate_by = 9
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            return Event.objects.filter(
-                Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
-            ).distinct().order_by('date')
-        else:
-            return Event.objects.filter(is_private=False).order_by('date')
 
+        if user.is_authenticated:
+            queryset = Event.objects.filter(
+                Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
+            ).distinct()
+        else:
+            queryset = Event.objects.filter(is_private=False)
+
+        queryset = queryset.filter(date__gte=timezone.now()).order_by('date')
+
+        search_query = self.request.GET.get('search')
+        date_from = self.request.GET.get('date_from')
+        date_to = self.request.GET.get('date_to')
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        if date_from:
+            queryset = queryset.filter(date__date__gte=date_from)
+
+        if date_to:
+            queryset = queryset.filter(date__date__lte=date_to)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_form'] = EventSearchForm(self.request.GET or None)
+        return context
 
 
 class EventDetailView(DetailView):
@@ -70,7 +93,7 @@ class EventDetailView(DetailView):
         user = self.request.user
 
         if user.is_authenticated:
-            participants = EventParticipation.objects.filter(event=event).exclude(user=user).select_related('user')
+            participants = EventParticipation.objects.filter(event=event).select_related('user')
             try:
                 participation = EventParticipation.objects.get(event=event, user=user)
                 context['user_rsvp'] = participation.status

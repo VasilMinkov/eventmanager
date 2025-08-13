@@ -1,9 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.forms import DateTimeField
-
 from eventmanager.events.models import Event, EventParticipation
-
 
 User = get_user_model()
 
@@ -55,3 +52,40 @@ class RSVPForm(forms.ModelForm):
         widgets = {
             'status': forms.RadioSelect
         }
+
+
+class EventSearchForm(forms.Form):
+    search = forms.CharField(
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search events by title or description...'
+        }),
+        label='Search'
+    )
+    location = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Filter by location'
+        }),
+        label='Location'
+    )
+    date_from = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        }),
+        label='From Date'
+    )
+    date_to = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        }),
+        label='To Date'
+    )

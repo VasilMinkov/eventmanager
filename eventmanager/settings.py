@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
     'eventmanager.accounts',
     'eventmanager.events',
@@ -44,6 +43,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'crispy_bootstrap5',
     'eventmanager.comments',
+    'django_extensions',
+    'django.contrib.messages',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
