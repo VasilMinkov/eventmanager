@@ -5,3 +5,4 @@ An app for managing events. The user can register and create events with a title
 Users have profiles which they can edit.
 
 The app works with a postgres database (set in a docker locally).
+Necessary packages to run should be installed from requirements.
