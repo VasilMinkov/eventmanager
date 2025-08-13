@@ -62,7 +62,30 @@
             });
         </script>
 
-        <a href="{% url 'event-rsvp' event.pk %}" class="btn btn-success">RSVP</a>
         <a href="{% url 'home' %}" class="btn btn-secondary">Back to Events</a>
+
+        <h4>Comments</h4>
+
+        {% for comment in comments %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <strong>{{ comment.author.username }}</strong>
+                    <p>{{ comment.content }}</p>
+                    <small class="text-muted">{{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' event.pk %}">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'login' %}">Log in</a> to comment.</p>
+        {% endif %}
     </div>
 {% endblock %}

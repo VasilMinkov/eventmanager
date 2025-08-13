@@ -1,8 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, CreateView, ListView, DetailView, FormView
+from django.views.generic import CreateView, ListView, DetailView, FormView
 
+from eventmanager.comments.forms import CommentForm
 from eventmanager.events.forms import EventForm, RSVPForm
 from eventmanager.events.models import Event, EventParticipation
 
@@ -35,22 +36,22 @@ class EventDetailView(DetailView):
         event = self.get_object()
         user = self.request.user
 
-        # All participants excluding the current user
-        participants = event.participants.exclude(user=user).select_related('user').all()
-        context['participants'] = participants
-
-        # Current user RSVP status
         if user.is_authenticated:
+            participants = EventParticipation.objects.filter(event=event).exclude(user=user).select_related('user')
             try:
-                participation = event.participants.get(user=user)
+                participation = EventParticipation.objects.get(event=event, user=user)
                 context['user_rsvp'] = participation.status
             except EventParticipation.DoesNotExist:
                 context['user_rsvp'] = None
         else:
+            participants = EventParticipation.objects.filter(event=event).select_related('user')
             context['user_rsvp'] = None
 
-        # Flag if more than 5 participants
+        context['participants'] = participants
         context['has_many_participants'] = participants.count() > 5
+
+        context['comments'] = event.comments.filter(approved=True).order_by('-created_at')
+        context['comment_form'] = CommentForm()
 
         return context
 
@@ -84,3 +85,14 @@ class RSVPView(LoginRequiredMixin, FormView):
         return context
 
 
+class MyEventsView(LoginRequiredMixin, ListView):
+    model = Event
+    template_name = 'events/my-events.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return Event.objects.all()
+        else:
+            return Event.objects.filter(is_private=False)

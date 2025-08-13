@@ -1,0 +1,20 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card mx-auto" style="max-width: 400px;">
+            <div class="card-body text-center">
+                <!-- Profile Picture -->
+               <img src="{% static 'images/default-avatar.jpg' %}" alt="Default Avatar" class="img-thumbnail rounded" width="150" height="150">
+
+
+                <!-- Username -->
+                <h4 class="card-title">{{ user_profile.username }}</h4>
+
+                <!-- Email -->
+                <p class="text-muted">{{ user_profile.email }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
