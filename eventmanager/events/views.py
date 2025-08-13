@@ -1,22 +1,45 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView, FormView
 
 from eventmanager.comments.forms import CommentForm
 from eventmanager.events.forms import EventForm, RSVPForm
-from eventmanager.events.models import Event, EventParticipation
+from eventmanager.events.models import Event, EventParticipation, Invitation
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.http import Http404
+from .models import Event
+from .forms import EventForm
 
 
-class EventCreateView(LoginRequiredMixin, CreateView):
+class EventCreateView(CreateView):
     model = Event
     form_class = EventForm
     template_name = 'events/event-create.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('event_list')
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        EventParticipation.objects.create(
+            event=self.object,
+            user=self.request.user,
+            status='yes'
+        )
+
+        if form.instance.is_private:
+            invited_users = form.cleaned_data.get('invited_users')
+            for user in invited_users:
+                Invitation.objects.create(event=self.object, user=user)
+
+        return response
 
 
 class EventListView(ListView):
@@ -24,6 +47,16 @@ class EventListView(ListView):
     template_name = 'common/homepage.html'
     context_object_name = 'events'
     ordering = ['date']
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return Event.objects.filter(
+                Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
+            ).distinct().order_by('date')
+        else:
+            return Event.objects.filter(is_private=False).order_by('date')
+
 
 
 class EventDetailView(DetailView):
@@ -92,7 +125,42 @@ class MyEventsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            return Event.objects.all()
-        else:
-            return Event.objects.filter(is_private=False)
+        return Event.objects.filter(
+            Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
+        ).distinct().order_by('date')
+
+
+class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Event
+    form_class = EventForm  # Create this form based on your Event model
+    template_name = 'events/edit-event.html'
+
+    def test_func(self):
+        event = self.get_object()
+        return self.request.user == event.created_by
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You can only edit events you created.")
+        return redirect('event-details', pk=self.get_object().pk)
+
+    def get_success_url(self):
+        messages.success(self.request, "Event updated successfully!")
+        return reverse_lazy('event-details', kwargs={'pk': self.object.pk})
+
+
+class EventDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Event
+    template_name = 'events/delete-event.html'
+    success_url = reverse_lazy('home')
+
+    def test_func(self):
+        event = self.get_object()
+        return self.request.user == event.created_by
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You can only delete events you created.")
+        return redirect('event-details', pk=self.get_object().pk)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Event deleted successfully!")
+        return super().delete(request, *args, **kwargs)

@@ -13,5 +13,6 @@ class AddCommentView(LoginRequiredMixin, View):
             comment = form.save(commit=False)
             comment.event = event
             comment.author = request.user
+            comment.approved = True
             comment.save()
-        return redirect('event_details', pk=event.pk)
+        return redirect('event-details', pk=event.pk)

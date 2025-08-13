@@ -9,11 +9,11 @@ from .forms import UserRegisterForm
 class UserRegisterView(FormView):
     template_name = 'accounts/register.html'
     form_class = UserRegisterForm
-    success_url = reverse_lazy('home')  # Redirect after success
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)  # Log in the newly registered user
+        login(self.request, user)
         return super().form_valid(form)
 
 

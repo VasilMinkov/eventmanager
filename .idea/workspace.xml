@@ -5,46 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32c2b56c-ceb5-45be-a653-0367b5c39f9d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/eventmanager/accounts/auth_backends.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/accounts/managers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/accounts/migrations/0001_initial.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/accounts/signals.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/migrations/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/eventmanager/comments/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/default-avatar.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/accounts/user-profile.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/events/my-events.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/information_schema.FNRwLQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/information_schema.FNRwLQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/information_schema.FNRwLQ.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/information_schema.FNRwLQ.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/pg_catalog.0S1ZNQ.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/pg_catalog.0S1ZNQ.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/events_manager_db.NqHhqg/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1497b5e7-841c-4462-9156-d326318d2386/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/eventmanager.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/eventmanager.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/events/delete-event.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/events/edit-event.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/accounts/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eventmanager/accounts/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/accounts/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eventmanager/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/events/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/events/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/events/migrations/0002_eventparticipation.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/comments/migrations/0001_initial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/events/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/events/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eventmanager/comments/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/comments/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eventmanager/events/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/events/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eventmanager/events/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/events/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eventmanager/events/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/events/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eventmanager/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eventmanager/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventmanager/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/common/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/common/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/common/homepage.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/common/homepage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/events/event-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/events/event-create.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/events/event-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/events/event-details.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,8 +29,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -208,7 +179,7 @@
       <workItem from="1755034640291" duration="3217000" />
       <workItem from="1755038117743" duration="1110000" />
       <workItem from="1755041118153" duration="50000" />
-      <workItem from="1755041588528" duration="8099000" />
+      <workItem from="1755041588528" duration="12586000" />
     </task>
     <servers />
   </component>
