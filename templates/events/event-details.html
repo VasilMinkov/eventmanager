@@ -2,58 +2,58 @@
 {% block title %}{{ event.title }} - Event Manager{% endblock %}
 {% block content %}
 
-<div class="container mt-4">
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h1 class="h3 mb-1">{{ event.title }}</h1>
-                    <small class="opacity-75">Created by {{ event.created_by.username }}</small>
+    <div class="container mt-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="h3 mb-1">{{ event.title }}</h1>
+                        <small class="opacity-75">Created by {{ event.created_by.username }}</small>
+                    </div>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'event-rsvp' event.pk %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-calendar-check me-1"></i>Change RSVP
+                        </a>
+                    {% endif %}
                 </div>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'event-rsvp' event.pk %}" class="btn btn-light btn-sm">
-                        <i class="fas fa-calendar-check me-1"></i>Change RSVP
-                    </a>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-calendar text-primary me-2"></i>
+                            <strong class="me-2">Date:</strong>
+                            <span class="badge bg-light text-dark">{{ event.date|date:"F j, Y, g:i A" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <strong class="me-2">Location:</strong>
+                            <span>{{ event.location|default:"Location not specified" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if event.description %}
+                    <div class="border-start border-primary border-3 ps-3 mb-3">
+                        <p class="mb-0">{{ event.description }}</p>
+                    </div>
                 {% endif %}
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="fas fa-calendar text-primary me-2"></i>
-                        <strong class="me-2">Date:</strong>
-                        <span class="badge bg-light text-dark">{{ event.date|date:"F j, Y, g:i A" }}</span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                        <strong class="me-2">Location:</strong>
-                        <span>{{ event.location|default:"Location not specified" }}</span>
-                    </div>
-                </div>
-            </div>
 
-            {% if event.description %}
-                <div class="border-start border-primary border-3 ps-3 mb-3">
-                    <p class="mb-0">{{ event.description }}</p>
-                </div>
-            {% endif %}
-
-            {% if user.is_authenticated %}
-                <div class="alert
+                {% if user.is_authenticated %}
+                    <div class="alert
                     {% if user_rsvp == 'yes' %}alert-success
                     {% elif user_rsvp == 'no' %}alert-danger
                     {% else %}alert-warning{% endif %}
                     d-flex align-items-center" role="alert">
-                    <i class="fas
+                        <i class="fas
                         {% if user_rsvp == 'yes' %}fa-check-circle
                         {% elif user_rsvp == 'no' %}fa-times-circle
                         {% else %}fa-question-circle{% endif %}
                         me-2"></i>
-                    <strong>Your Response:</strong>
-                    <span class="ms-2">
+                        <strong>Your Response:</strong>
+                        <span class="ms-2">
                         {% if user_rsvp == 'yes' %}
                             Going ✅
                         {% elif user_rsvp == 'no' %}
@@ -62,141 +62,143 @@
                             You have not responded yet
                         {% endif %}
                     </span>
-                </div>
-            {% else %}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <a href="{% url 'login' %}" class="alert-link">Login</a> to RSVP for this event.
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex align-items-center">
-            <i class="fas fa-users text-primary me-2"></i>
-            <h5 class="mb-0">Attendees ({{ participants|length }})</h5>
-        </div>
-        <div class="card-body">
-            {% if participants %}
-                <div class="row" id="attendee-list">
-                    {% for participant in participants %}
-                        <div class="col-md-6 mb-2 {% if forloop.counter > 6 %}d-none extra-attendee{% endif %}">
-                            <div class="d-flex align-items-center p-2 border rounded">
-                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                    {{ participant.user.username|first|upper }}
-                                </div>
-                                <div>
-                                    <div class="fw-bold">{{ participant.user.username }}</div>
-                                    {% if participant.status == 'yes' %}
-                                        <span class="badge bg-success">Going</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Not Going</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                {% if has_many_participants %}
-                    <div class="text-center mt-3">
-                        <button id="see-more-btn" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-chevron-down me-1"></i>Show More Attendees
-                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <a href="{% url 'login' %}" class="alert-link">Login</a> to RSVP for this event.
                     </div>
                 {% endif %}
-            {% else %}
-                <div class="text-center text-muted py-3">
-                    <i class="fas fa-user-slash fa-2x mb-2"></i>
-                    <p class="mb-0">No attendees yet. Be the first to join!</p>
-                </div>
-            {% endif %}
+            </div>
         </div>
-    </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header d-flex align-items-center">
-            <i class="fas fa-comments text-primary me-2"></i>
-            <h5 class="mb-0">Comments ({{ comments|length }})</h5>
-        </div>
-        <div class="card-body">
-            {% for comment in comments %}
-                <div class="border-bottom pb-3 mb-3 {% if forloop.last %}border-bottom-0 mb-0 pb-0{% endif %}">
-                    <div class="d-flex align-items-start">
-                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px;">
-                            {{ comment.author.username|first|upper }}
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <strong class="text-primary">{{ comment.author.username }}</strong>
-                                <small class="text-muted">{{ comment.created_at|date:"M j, Y g:i A" }}</small>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-users text-primary me-2"></i>
+                <h5 class="mb-0">Attendees ({{ participants|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if participants %}
+                    <div class="row" id="attendee-list">
+                        {% for participant in participants %}
+                            <div class="col-md-6 mb-2 {% if forloop.counter > 6 %}d-none extra-attendee{% endif %}">
+                                <div class="d-flex align-items-center p-2 border rounded">
+                                    <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3"
+                                         style="width: 40px; height: 40px;">
+                                        {{ participant.user.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ participant.user.username }}</div>
+                                        {% if participant.status == 'yes' %}
+                                            <span class="badge bg-success">Going</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Not Going</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                            <p class="mb-0">{{ comment.content }}</p>
+                        {% endfor %}
+                    </div>
+                    {% if has_many_participants %}
+                        <div class="text-center mt-3">
+                            <button id="see-more-btn" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-chevron-down me-1"></i>Show More Attendees
+                            </button>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-user-slash fa-2x mb-2"></i>
+                        <p class="mb-0">No attendees yet. Be the first to join!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-comments text-primary me-2"></i>
+                <h5 class="mb-0">Comments ({{ comments|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% for comment in comments %}
+                    <div class="border-bottom pb-3 mb-3 {% if forloop.last %}border-bottom-0 mb-0 pb-0{% endif %}">
+                        <div class="d-flex align-items-start">
+                            <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                                 style="width: 40px; height: 40px;">
+                                {{ comment.author.username|first|upper }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="text-primary">{{ comment.author.username }}</strong>
+                                    <small class="text-muted">{{ comment.created_at|date:"M j, Y g:i A" }}</small>
+                                </div>
+                                <p class="mb-0">{{ comment.content }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% empty %}
-                <div class="text-center text-muted py-3">
-                    <i class="fas fa-comment-slash fa-2x mb-2"></i>
-                    <p class="mb-0">No comments yet. Start the conversation!</p>
-                </div>
-            {% endfor %}
+                {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-comment-slash fa-2x mb-2"></i>
+                        <p class="mb-0">No comments yet. Start the conversation!</p>
+                    </div>
+                {% endfor %}
 
-            {% if user.is_authenticated %}
-                <div class="mt-4 pt-3 border-top">
-                    <h6 class="mb-3">
-                        <i class="fas fa-plus-circle text-primary me-2"></i>Add a Comment
-                    </h6>
-                    <form method="post" action="{% url 'add_comment' event.pk %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ comment_form.content.label_tag }}
-                            {{ comment_form.content }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane me-1"></i>Post Comment
-                        </button>
-                    </form>
-                </div>
-            {% else %}
-                <div class="alert alert-light mt-3">
-                    <i class="fas fa-sign-in-alt me-2"></i>
-                    <a href="{% url 'login' %}" class="alert-link">Log in</a> to join the discussion.
+                {% if user.is_authenticated %}
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="mb-3">
+                            <i class="fas fa-plus-circle text-primary me-2"></i>Add a Comment
+                        </h6>
+                        <form method="post" action="{% url 'event-details' event.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ comment_form.content.label_tag }}
+                                {{ comment_form.content }}
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>Post Comment
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light mt-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        <a href="{% url 'login' %}" class="alert-link">Log in</a> to join the discussion.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Events
+            </a>
+            {% if user == event.created_by %}
+                <div>
+                    <a href="{% url 'event-edit' event.pk %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-edit me-1"></i>Edit Event
+                    </a>
+                    <a href="{% url 'event-delete' event.pk %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-1"></i>Delete Event
+                    </a>
                 </div>
             {% endif %}
         </div>
-    </div>
 
-    <div class="d-flex justify-content-between mb-4">
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Events
-        </a>
-        {% if user == event.created_by %}
-            <div>
-                <a href="{% url 'event-edit' event.pk %}" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-edit me-1"></i>Edit Event
-                </a>
-                <a href="{% url 'event-delete' event.pk %}" class="btn btn-outline-danger">
-                    <i class="fas fa-trash me-1"></i>Delete Event
-                </a>
-            </div>
-        {% endif %}
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const seeMoreBtn = document.getElementById('see-more-btn');
-            if (!seeMoreBtn) return;
-            seeMoreBtn.addEventListener('click', () => {
-                document.querySelectorAll('.extra-attendee').forEach(el => el.classList.remove('d-none'));
-                seeMoreBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>Show Less';
-                seeMoreBtn.onclick = () => {
-                    document.querySelectorAll('.extra-attendee').forEach(el => el.classList.add('d-none'));
-                    seeMoreBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>Show More Attendees';
-                    seeMoreBtn.onclick = arguments.callee.caller;
-                };
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const seeMoreBtn = document.getElementById('see-more-btn');
+                if (!seeMoreBtn) return;
+                seeMoreBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.extra-attendee').forEach(el => el.classList.remove('d-none'));
+                    seeMoreBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>Show Less';
+                    seeMoreBtn.onclick = () => {
+                        document.querySelectorAll('.extra-attendee').forEach(el => el.classList.add('d-none'));
+                        seeMoreBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>Show More Attendees';
+                        seeMoreBtn.onclick = arguments.callee.caller;
+                    };
+                });
             });
-        });
-    </script>
-</div>
+        </script>
+    </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView
 from eventmanager.comments.forms import CommentForm
 from eventmanager.events.forms import EventForm, RSVPForm, EventSearchForm
@@ -48,10 +49,12 @@ class EventListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-
         if user.is_authenticated:
             queryset = Event.objects.filter(
-                Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
+                Q(is_private=False) |
+                Q(created_by=user) |
+                Q(invitations__user=user) |
+                Q(participations__user=user)
             ).distinct()
         else:
             queryset = Event.objects.filter(is_private=False)
@@ -67,10 +70,8 @@ class EventListView(ListView):
                 Q(title__icontains=search_query) |
                 Q(description__icontains=search_query)
             )
-
         if date_from:
             queryset = queryset.filter(date__date__gte=date_from)
-
         if date_to:
             queryset = queryset.filter(date__date__lte=date_to)
 
@@ -82,15 +83,33 @@ class EventListView(ListView):
         return context
 
 
-class EventDetailView(DetailView):
-    model = Event
-    template_name = 'events/event-details.html'
-    context_object_name = 'event'
+class EventDetailView(View):
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        context = self.get_context_data(event, request.user)
+        return render(request, 'events/event-details.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        event = self.get_object()
-        user = self.request.user
+    def post(self, request, pk):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        event = get_object_or_404(Event, pk=pk)
+        comment_form = CommentForm(request.POST)
+
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            comment.event = event
+            comment.approved = True
+            comment.save()
+            return redirect('event-details', pk=pk)
+
+        context = self.get_context_data(event, request.user)
+        context['comment_form'] = comment_form
+        return render(request, 'events/event-details.html', context)
+
+    def get_context_data(self, event, user):
+        context = {'event': event}
 
         if user.is_authenticated:
             participants = EventParticipation.objects.filter(event=event).select_related('user')
@@ -105,8 +124,7 @@ class EventDetailView(DetailView):
 
         context['participants'] = participants
         context['has_many_participants'] = participants.count() > 5
-
-        context['comments'] = event.comments.filter(approved=True).order_by('-created_at')
+        context['comments'] = event.comments.all().order_by('-created_at')
         context['comment_form'] = CommentForm()
 
         return context
@@ -121,7 +139,6 @@ class RSVPView(LoginRequiredMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_form(self):
-        # Prefill form if user already RSVP'd
         try:
             participation = EventParticipation.objects.get(user=self.request.user, event=self.event)
             return self.form_class(instance=participation, **self.get_form_kwargs())
@@ -133,13 +150,26 @@ class RSVPView(LoginRequiredMixin, FormView):
         participation.user = self.request.user
         participation.event = self.event
         participation.save()
-        return redirect(reverse('event-details', kwargs={'pk': self.event.pk}))
+
+        next_url = self.request.GET.get('next')
+        if next_url == 'my-events':
+            return redirect('my-events')
+        elif next_url:
+            return redirect(next_url)
+        else:
+            return redirect('event-details', pk=self.event.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['event'] = self.event
-        return context
 
+        try:
+            participation = EventParticipation.objects.get(user=self.request.user, event=self.event)
+            context['current_status'] = participation.status
+        except EventParticipation.DoesNotExist:
+            context['current_status'] = None
+
+        return context
 
 class MyEventsView(LoginRequiredMixin, ListView):
     model = Event
@@ -148,14 +178,45 @@ class MyEventsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        return Event.objects.filter(
-            Q(created_by=user) | Q(invitations__user=user) | Q(participations__user=user)
-        ).distinct().order_by('date')
+
+        created_events = Event.objects.filter(created_by=user)
+
+        attending_events = Event.objects.filter(
+            participations__user=user,
+            participations__status='yes'
+        )
+
+        all_invited = Event.objects.filter(invitations__user=user)
+        invited_no_response = all_invited.exclude(participations__user=user)
+
+        all_events = created_events.union(attending_events, invited_no_response)
+
+        return all_events.order_by('date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        events_with_status = []
+        for event in context['events']:
+            if event.created_by == user:
+                event.user_status = 'hosting'
+            elif event.participations.filter(user=user, status='yes').exists():
+                event.user_status = 'attending'
+            elif event.participations.filter(user=user, status='no').exists():
+                event.user_status = 'declined'
+            else:
+                event.user_status = 'invited'
+
+            events_with_status.append(event)
+
+        context['events'] = events_with_status
+        return context
 
 
 class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Event
-    form_class = EventForm  # Create this form based on your Event model
+    form_class = EventForm
     template_name = 'events/edit-event.html'
 
     def test_func(self):
